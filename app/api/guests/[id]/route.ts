@@ -1,17 +1,22 @@
 import { createClient } from '@/lib/supabase/server';
 import { guestBookSchema } from '@/lib/validators/guestbook-validator';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+
+type RouteContext = {
+  params: {
+    id: string;
+  };
+};
 
 // GET: Mengambil satu data tamu berdasarkan ID
-export async function GET(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function GET(request: NextRequest, context: RouteContext) {
+  const { id } = context.params;
   const supabase = await createClient();
+  
   const { data, error } = await supabase
     .from('guests')
     .select('*')
-    .eq('id', params.id)
+    .eq('id', id)
     .single();
 
   if (error) {
@@ -22,10 +27,8 @@ export async function GET(
 }
 
 // PUT: Memperbarui data tamu berdasarkan ID
-export async function PUT(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function PUT(request: NextRequest, context: RouteContext) {
+  const { id } = context.params;
   const supabase = await createClient();
   const body = await request.json();
 
@@ -45,7 +48,7 @@ export async function PUT(
       purpose,
       visit_date: visitDate,
     })
-    .eq('id', params.id)
+    .eq('id', id)
     .select()
     .single();
 
@@ -57,16 +60,14 @@ export async function PUT(
 }
 
 // DELETE: Menghapus data tamu berdasarkan ID
-export async function DELETE(
-  request: Request,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest, context: RouteContext) {
+  const { id } = context.params;
   const supabase = await createClient();
 
   const { error } = await supabase
     .from('guests')
     .delete()
-    .eq('id', params.id);
+    .eq('id', id);
 
   if (error) {
     return NextResponse.json({ error: 'Gagal menghapus data', details: error.message }, { status: 500 });
