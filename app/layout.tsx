@@ -29,18 +29,18 @@ export const metadata: Metadata = {
   ],
   authors: [{ name: "Tim KKN Informatika UMC" }],
   creator: "Tim KKN Informatika Universitas Muhammadiyah Cirebon",
-  metadataBase: new URL("https://smartguest-gunungwangi.vercel.app"),
+  metadataBase: new URL("https://guest-book-gunungwangi.vercel.app/"),
   openGraph: {
     title: "Buku Tamu Digital Desa Gunungwangi",
     description:
       "Catat kunjungan secara digital di Desa Gunungwangi, Argapura, Majalengka. Praktis, modern, dan efisien.",
-    url: "https://smartguest-gunungwangi.vercel.app",
+    url: "https://guest-book-gunungwangi.vercel.app/",
     siteName: "Buku Tamu Desa Gunungwangi",
     locale: "id_ID",
     type: "website",
     images: [
       {
-        url: "/logo.png", // pastikan kamu punya file ini di public/
+        url: "/logo.png", 
         width: 1200,
         height: 630,
         alt: "Buku Tamu Digital Desa Gunungwangi",
