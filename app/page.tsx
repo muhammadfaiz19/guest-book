@@ -8,6 +8,7 @@ import { Hero } from "@/components/landing/Hero"
 import { VillageInfo } from "@/components/landing/VillageInfo"
 import { Features } from "@/components/landing/Features"
 import { Footer } from "@/components/landing/Footer"
+import { FAQSection } from "@/components/landing/FAQ"
 
 export default function HomePage() {
   const [mounted, setMounted] = useState(false)
@@ -30,6 +31,7 @@ export default function HomePage() {
         <Hero />
         <VillageInfo />
         <Features />
+        <FAQSection />
       </main>
       <Footer />
     </div>

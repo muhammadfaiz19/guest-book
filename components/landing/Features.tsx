@@ -1,4 +1,3 @@
-// app/components/landing/Features.tsx
 "use client"
 import { motion } from "framer-motion"
 import { Card, CardContent } from "@/components/ui/card"

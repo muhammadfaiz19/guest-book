@@ -1,4 +1,3 @@
-// app/components/landing/FloatingElements.tsx
 "use client"
 import { motion } from "framer-motion"
 
