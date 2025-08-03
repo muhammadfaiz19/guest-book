@@ -1,8 +1,8 @@
-// app/components/landing/Footer.tsx
 "use client"
+
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { TreePine } from "lucide-react"
+import Image from "next/image"
 import { staggerContainer, fadeInUp } from "@/lib/animations"
 import { footerData } from "@/lib/data"
 
@@ -30,15 +30,21 @@ export function Footer() {
         >
           {/* Footer About Section */}
           <motion.div className="sm:col-span-2 lg:col-span-1" variants={fadeInUp}>
-            <div className="flex items-center space-x-3 mb-4 sm:mb-6">
-              <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg">
-                <TreePine className="w-7 h-7 text-green-800" />
+            <Link href="/" className="flex items-center space-x-3 mb-4 sm:mb-6">
+              <div className="w-12 h-12 relative rounded-xl shadow-lg bg-white overflow-hidden">
+                <Image
+                  src="/logo.png"
+                  alt="Logo Buku Tamu Digital"
+                  fill
+                  className="object-contain p-1"
+                  sizes="(max-width: 768px) 40px, 48px"
+                />
               </div>
               <div>
                 <h3 className="text-xl sm:text-2xl font-bold font-serif">Buku Tamu Digital</h3>
                 <p className="text-green-200 text-sm sm:text-base">Desa Gunungwangi</p>
               </div>
-            </div>
+            </Link>
             <p className="text-green-200 leading-relaxed text-sm sm:text-base">
               Sistem modern untuk Kantor Desa Gunungwangi, Argapura, Majalengka.
             </p>
