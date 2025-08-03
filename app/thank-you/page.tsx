@@ -1,11 +1,17 @@
 "use client"
 
+import { Suspense } from "react"
+import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
+import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { CheckCircle, Home, Printer, TreePine, MapPin, Calendar, Heart } from "lucide-react"
+import { CheckCircle, Home, Printer, TreePine, MapPin, Calendar, Heart, User, FileText, Phone } from "lucide-react"
 import Link from "next/link"
-import { motion } from "framer-motion"
-import { useEffect, useState } from "react"
+import { Header } from "@/components/landing/Header"
+import { Footer } from "@/components/landing/Footer"
+import { format, parse, isValid } from "date-fns"
+import { id } from "date-fns/locale"
 
 const confettiColors = ["#10b981", "#f59e0b", "#3b82f6", "#ef4444", "#8b5cf6"]
 
@@ -39,8 +45,27 @@ const Confetti = () => {
   )
 }
 
-export default function ThankYouPage() {
+const ThankYouContent = () => {
   const [showConfetti, setShowConfetti] = useState(false)
+  const searchParams = useSearchParams()
+
+  const parseVisitDate = (dateStr: string | null) => {
+    if (!dateStr) return "Tanggal tidak diisi"
+    try {
+      const parsedDate = parse(dateStr, "dd MMMM yyyy", new Date(), { locale: id })
+      return isValid(parsedDate) ? format(parsedDate, "dd MMMM yyyy", { locale: id }) : "Tanggal tidak valid"
+    } catch {
+      return "Tanggal tidak valid"
+    }
+  }
+
+  const guestData = {
+    fullName: searchParams.get("fullName") || "Tamu",
+    address: searchParams.get("address") || "Tidak diisi",
+    phone: searchParams.get("phone") || null,
+    visitDate: parseVisitDate(searchParams.get("visitDate")),
+    purpose: searchParams.get("purpose") || "Tidak diisi",
+  }
 
   useEffect(() => {
     setShowConfetti(true)
@@ -51,78 +76,27 @@ export default function ThankYouPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-amber-50 relative overflow-hidden">
       {showConfetti && <Confetti />}
-
-      {/* Floating Elements */}
+      
       <div className="fixed inset-0 pointer-events-none">
         <motion.div
           className="absolute top-20 left-10 w-4 h-4 bg-green-200 rounded-full opacity-60"
-          animate={{
-            y: [0, -20, 0],
-            x: [0, 10, 0],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-          }}
+          animate={{ y: [0, -20, 0], x: [0, 10, 0] }}
+          transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div
           className="absolute top-40 right-20 w-6 h-6 bg-amber-200 rounded-full opacity-40"
-          animate={{
-            y: [0, 15, 0],
-            x: [0, -15, 0],
-          }}
-          transition={{
-            duration: 5,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-            delay: 1,
-          }}
+          animate={{ y: [0, 15, 0], x: [0, -15, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
         />
         <motion.div
           className="absolute bottom-40 left-1/4 w-3 h-3 bg-green-300 rounded-full opacity-50"
-          animate={{
-            y: [0, -25, 0],
-            rotate: [0, 180, 360],
-          }}
-          transition={{
-            duration: 6,
-            repeat: Number.POSITIVE_INFINITY,
-            ease: "easeInOut",
-            delay: 2,
-          }}
+          animate={{ y: [0, -25, 0], rotate: [0, 180, 360] }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut", delay: 2 }}
         />
       </div>
 
-      {/* Header */}
-      <motion.header
-        className="bg-white/90 backdrop-blur-md shadow-sm border-b border-green-100"
-        initial={{ opacity: 0, y: -50 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: "easeOut" }}
-      >
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <motion.div
-            className="flex items-center space-x-3"
-            whileHover={{ scale: 1.02 }}
-            transition={{ type: "spring", stiffness: 300 }}
-          >
-            <motion.div
-              className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-600 via-green-700 to-green-800 rounded-xl flex items-center justify-center shadow-lg"
-              whileHover={{ rotate: 10 }}
-              transition={{ type: "spring", stiffness: 300 }}
-            >
-              <TreePine className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
-            </motion.div>
-            <div>
-              <h1 className="text-lg sm:text-xl font-bold text-green-800 font-serif">Buku Tamu Digital</h1>
-              <p className="text-xs sm:text-sm text-green-600">Desa Gunungwangi</p>
-            </div>
-          </motion.div>
-        </div>
-      </motion.header>
+      <Header />
 
-      {/* Thank You Section */}
       <section className="py-8 sm:py-12 lg:py-20 px-4 sm:px-6 lg:px-8">
         <div className="container mx-auto max-w-3xl text-center">
           <motion.div
@@ -136,11 +110,7 @@ export default function ThankYouPage() {
                   className="w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-gradient-to-br from-green-100 via-green-200 to-green-300 rounded-full flex items-center justify-center mx-auto mb-6 sm:mb-8 shadow-lg"
                   initial={{ scale: 0, rotate: -180 }}
                   animate={{ scale: 1, rotate: 0 }}
-                  transition={{
-                    type: "spring",
-                    stiffness: 200,
-                    delay: 0,
-                  }}
+                  transition={{ type: "spring", stiffness: 200, delay: 0 }}
                   whileHover={{ scale: 1.1, rotate: 5 }}
                 >
                   <CheckCircle className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 text-green-600" />
@@ -152,11 +122,11 @@ export default function ThankYouPage() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.6, delay: 0.5 }}
                 >
-                  Terima Kasih!
+                  Terima Kasih, {guestData.fullName}!
                   <motion.span
                     className="inline-block ml-2"
                     animate={{ rotate: [0, 10, -10, 0] }}
-                    transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, delay: 2 }}
+                    transition={{ duration: 2, repeat: Infinity, delay: 2 }}
                   >
                     <Heart className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
                   </motion.span>
@@ -179,33 +149,33 @@ export default function ThankYouPage() {
                   whileHover={{ scale: 1.02 }}
                 >
                   <motion.div
-                    className="flex items-center justify-center mb-3 sm:mb-4"
+                    className="space-y-3 text-sm sm:text-base"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.6, delay: 1.1 }}
                   >
-                    <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-green-600 mr-2" />
-                    <p className="text-green-800 font-medium text-sm sm:text-base lg:text-lg">
-                      Kunjungan Anda telah dicatat pada:
-                    </p>
-                  </motion.div>
-                  <motion.div
-                    className="flex items-center justify-center"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: 0.6, delay: 1.3 }}
-                  >
-                    <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mr-2" />
-                    <p className="text-green-700 text-sm sm:text-base lg:text-lg font-medium">
-                      {new Date().toLocaleDateString("id-ID", {
-                        weekday: "long",
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
+                    <div className="flex items-start gap-2">
+                      <User className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-green-800 font-medium">Nama: {guestData.fullName}</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-green-800 font-medium">Alamat: {guestData.address}</span>
+                    </div>
+                    {guestData.phone && (
+                      <div className="flex items-start gap-2">
+                        <Phone className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                        <span className="text-green-800 font-medium">No. HP: {guestData.phone}</span>
+                      </div>
+                    )}
+                    <div className="flex items-start gap-2">
+                      <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-green-800 font-medium">Tujuan: {guestData.purpose}</span>
+                    </div>
+                    <div className="flex items-start gap-2">
+                      <Calendar className="w-4 h-4 sm:w-5 sm:h-5 text-green-600 mt-0.5 flex-shrink-0" />
+                      <span className="text-green-800 font-medium">Tanggal Kunjungan: {guestData.visitDate}</span>
+                    </div>
                   </motion.div>
                 </motion.div>
 
@@ -264,11 +234,11 @@ export default function ThankYouPage() {
               >
                 <motion.span
                   animate={{ rotate: [0, 10, -10, 0] }}
-                  transition={{ duration: 2, repeat: Number.POSITIVE_INFINITY, delay: 3 }}
+                  transition={{ duration: 2, repeat: Infinity, delay: 3 }}
                 >
-                  🌾
+                  <TreePine className="w-5 h-5 mr-2 text-green-600" />
                 </motion.span>
-                <span className="ml-2">Selamat menikmati kunjungan Anda di Desa Gunungwangi!</span>
+                Selamat menikmati kunjungan Anda di Desa Gunungwangi!
               </motion.p>
               <motion.p
                 className="text-green-700 text-xs sm:text-sm"
@@ -291,6 +261,15 @@ export default function ThankYouPage() {
           </motion.div>
         </div>
       </section>
+      <Footer />
     </div>
+  )
+}
+
+export default function ThankYouPage() {
+  return (
+    <Suspense fallback={<div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-green-50 via-white to-amber-50">Memuat...</div>}>
+      <ThankYouContent />
+    </Suspense>
   )
 }
