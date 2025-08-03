@@ -1,4 +1,4 @@
-import { Shield, History, MapPin, Phone, Mail, Clock, FileText } from "lucide-react" // Menghapus QrCode, menambahkan FileText
+import { Shield, History, MapPin, Phone, Mail, Clock, FileText } from "lucide-react"
 import { ComponentType } from "react"
 
 export type FooterLink = {
@@ -8,9 +8,9 @@ export type FooterLink = {
 }
 
 export const villageStats = [
-  { number: "3,200", label: "Penduduk", color: "green" },
-  { number: "180", label: "Hektar Sawah", color: "amber" },
-  { number: "15", label: "RT/RW", color: "blue" },
+  { number: "1,945", label: "Penduduk", color: "green" },
+  { number: "3", label: "Hektar Sawah", color: "amber" },
+  { number: "12", label: "RT/RW", color: "blue" },
 ]
 
 export const features = [

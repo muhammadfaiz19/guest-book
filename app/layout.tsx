@@ -41,7 +41,7 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/logo.png", 
+        url: "/logo.webp", 
         width: 1200,
         height: 630,
         alt: "Buku Tamu Digital Desa Gunungwangi",
@@ -53,7 +53,7 @@ export const metadata: Metadata = {
     title: "Buku Tamu Digital Desa Gunungwangi",
     description:
       "Website resmi untuk pencatatan kunjungan di Desa Gunungwangi, Argapura, Majalengka.",
-    images: ["/logo.png"],
+    images: ["/logo.webp"],
     creator: "@timkknumc",
   },
   icons: {

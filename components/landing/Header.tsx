@@ -23,7 +23,7 @@ export function Header() {
               transition={{ type: "spring", stiffness: 300 }}
             >
               <Image
-                src="/logo.png"
+                src="/logo.webp"
                 alt="Logo Desa Gunungwangi"
                 fill
                 sizes="(max-width: 768px) 40px, (max-width: 1024px) 48px, 52px"

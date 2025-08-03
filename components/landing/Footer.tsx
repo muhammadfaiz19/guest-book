@@ -33,7 +33,7 @@ export function Footer() {
             <Link href="/" className="flex items-center space-x-3 mb-4 sm:mb-6">
               <div className="w-12 h-12 relative rounded-xl shadow-lg bg-white overflow-hidden">
                 <Image
-                  src="/logo.png"
+                  src="/logo.webp"
                   alt="Logo Buku Tamu Digital"
                   fill
                   className="object-contain p-1"
