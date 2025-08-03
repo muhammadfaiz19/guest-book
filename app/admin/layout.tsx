@@ -1,20 +1,22 @@
-import { createClient } from '@/lib/supabase/server';
-import { redirect } from 'next/navigation';
-import { SidebarProvider } from "@/components/ui/sidebar";
-import AppSidebar from './dashboard/components/AppSidebar'; 
+import type React from "react"
+import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation"
+import { SidebarProvider } from "@/components/ui/sidebar"
+import AppSidebar from "@/components/dashboard/AppSidebar"
+
 export default async function AdminLayout({
   children,
 }: {
-  children: React.ReactNode;
+  children: React.ReactNode
 }) {
-  const supabase = await createClient();
+  const supabase = await createClient()
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getUser()
 
   if (!user) {
-    redirect('/login');
+    redirect("/login")
   }
 
   return (
@@ -24,5 +26,5 @@ export default async function AdminLayout({
         {children}
       </SidebarProvider>
     </div>
-  );
+  )
 }

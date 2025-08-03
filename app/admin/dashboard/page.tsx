@@ -1,108 +1,130 @@
 "use client"
 
-import { useEffect, useState } from "react";
-import { useSearchParams } from 'next/navigation';
-import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar";
-import { motion, AnimatePresence } from "framer-motion";
-import { TreePine } from "lucide-react";
+import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
+import { SidebarInset, SidebarTrigger } from "@/components/ui/sidebar"
+import { motion, AnimatePresence } from "framer-motion"
+import DashboardContent from "@/components/dashboard/DashboardContent"
+import GuestTable from "@/components/dashboard/GuestTable"
+import StatisticsContent from "@/components/dashboard/StatisticsContent"
+import SettingsContent from "@/components/dashboard/SettingsContent"
+import { createClient } from "@/lib/supabase/client"
+import Image from "next/image"
 
-// Import komponen untuk setiap tab
-import DashboardContent from "./components/DashboardContent";
-import GuestTable from "./components/GuestTable";
-import StatisticsContent from "./components/StatisticsContent";
-import SettingsContent from "./components/SettingsContent";
-import { createClient } from "@/lib/supabase/client";
-
-// Definisikan tipe data tamu
 export interface Guest {
-  id: number;
-  created_at: string;
-  full_name: string;
-  address: string;
-  phone: string | null;
-  purpose: string;
-  visit_date: string;
+  id: string
+  created_at: string
+  full_name: string
+  address: string
+  phone: string | null
+  purpose: string
+  visit_date: string
 }
 
 const menuItems = [
-  { id: "dashboard", title: "Dashboard" },
-  { id: "guests", title: "Data Tamu" },
-  { id: "statistics", title: "Statistik" },
-  { id: "settings", title: "Pengaturan" },
-];
+  { id: "dashboard", title: "Beranda" },
+  { id: "guests", title: "Data Pengunjung" },
+  { id: "statistics", title: "Analitik" },
+  { id: "settings", title: "Konfigurasi" },
+]
 
 export default function AdminDashboardPage() {
-  const searchParams = useSearchParams();
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [guestData, setGuestData] = useState<Guest[]>([]);
-  const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  const searchParams = useSearchParams()
+  const [activeTab, setActiveTab] = useState("dashboard")
+  const [guestData, setGuestData] = useState<Guest[]>([])
+  const [userName, setUserName] = useState<string>("Administrator")
+  const [loading, setLoading] = useState(true)
+  const supabase = createClient()
 
   useEffect(() => {
-    const tab = searchParams.get('tab') || 'dashboard';
-    setActiveTab(tab);
-  }, [searchParams]);
-  
+    const tab = searchParams.get("tab") || "dashboard"
+    setActiveTab(tab)
+  }, [searchParams])
+
   useEffect(() => {
     const fetchGuests = async () => {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from('guests')
-        .select('*')
-        .order('created_at', { ascending: false });
+      setLoading(true)
+      try {
+        const { data, error } = await supabase
+          .from("guests")
+          .select("*")
+          .order("created_at", { ascending: false })
 
-      if (error) {
-        console.error("Failed to fetch guests:", error);
-      } else {
-        setGuestData(data as Guest[]);
+        if (error) {
+          console.error("Failed to fetch guests:", error)
+          setGuestData([])
+        } else {
+          setGuestData(data as Guest[])
+        }
+      } catch (error) {
+        console.error("Database connection error:", error)
+        setGuestData([])
       }
-      setLoading(false);
-    };
+      setLoading(false)
+    }
 
-    fetchGuests();
-  }, [supabase]);
+    const fetchUser = async () => {
+      const { data, error } = await supabase.auth.getUser()
+      if (error) {
+        console.error("Failed to fetch user:", error)
+      } else {
+        const name = data.user?.user_metadata?.name || "Administrator"
+        setUserName(name)
+      }
+    }
+
+    fetchGuests()
+    fetchUser()
+  }, [])
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'guests':
-        return <GuestTable guestData={guestData} setGuestData={setGuestData} loading={loading} />;
-      case 'statistics':
-        return <StatisticsContent guestData={guestData} />;
-      case 'settings':
-        return <SettingsContent />;
-      case 'dashboard':
+      case "guests":
+        return <GuestTable guestData={guestData} setGuestData={setGuestData} loading={loading} />
+      case "statistics":
+        return <StatisticsContent guestData={guestData} />
+      case "settings":
+        return <SettingsContent />
+      case "dashboard":
       default:
-        return <DashboardContent guestData={guestData} />;
+        return <DashboardContent guestData={guestData} userName={userName} />
     }
-  };
+  }
 
   return (
     <SidebarInset>
       <motion.header
-        className="flex h-16 shrink-0 items-center gap-2 border-b border-green-100 px-4 bg-white/80 backdrop-blur-md sticky top-0 z-40"
+        className="flex h-20 shrink-0 items-center gap-3 border-b border-slate-200/60 px-6 bg-white/95 backdrop-blur-xl sticky top-0 z-50 shadow-sm"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
+        transition={{ duration: 0.6 }}
       >
-        <SidebarTrigger className="-ml-1 text-green-700 hover:bg-green-50" />
+        <SidebarTrigger className="-ml-1 text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors p-2" />
         <div className="flex items-center space-x-2 ml-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-green-600 to-green-700 rounded-lg flex items-center justify-center">
-            <TreePine className="w-5 h-5 text-white" />
+          {/* LOGO */}
+          <div className="relative w-12 h-12">
+            <Image
+              src="/logo.png"
+              alt="Logo Desa Gunungwangi"
+              fill
+              sizes="(max-width: 768px) 40px, (max-width: 1024px) 48px, 52px"
+              className="object-contain rounded-md shadow-sm"
+              priority
+            />
           </div>
+          {/* TITLE */}
           <div>
-            <h1 className="text-lg font-semibold text-green-800 font-serif">
-              {menuItems.find((item) => item.id === activeTab)?.title || "Dashboard"}
+            <h1 className="text-xl font-bold text-slate-800 tracking-tight">
+              {menuItems.find((item) => item.id === activeTab)?.title || "Beranda"}
             </h1>
-            <p className="text-xs text-green-600">Desa Gunungwangi</p>
+            <p className="text-sm text-slate-500 font-medium">Desa Gunungwangi</p>
           </div>
         </div>
       </motion.header>
 
-      <main className="flex-1 p-4 sm:p-6 lg:p-8">
-        <AnimatePresence mode="wait">
-          {renderContent()}
-        </AnimatePresence>
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 bg-gradient-to-br from-slate-50 via-white to-indigo-50/30 min-h-screen">
+        <AnimatePresence mode="wait">{renderContent()}</AnimatePresence>
       </main>
     </SidebarInset>
-  );
+  )
 }

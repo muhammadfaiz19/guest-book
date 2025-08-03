@@ -1,9 +1,9 @@
-// app/components/landing/Header.tsx
 "use client"
+
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { TreePine } from "lucide-react"
+import Image from "next/image"
 
 export function Header() {
   return (
@@ -15,19 +15,31 @@ export function Header() {
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
+          {/* LOGO + TITLE */}
+          <Link href="/" className="flex items-center space-x-3 group">
             <motion.div
-              className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-green-600 via-green-700 to-green-800 rounded-xl flex items-center justify-center shadow-lg"
+              className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-xl overflow-hidden shadow-lg"
               whileHover={{ rotate: 5 }}
               transition={{ type: "spring", stiffness: 300 }}
             >
-              <TreePine className="w-6 h-6 sm:w-7 sm:h-7 text-white" />
+              <Image
+                src="/logo.png"
+                alt="Logo Desa Gunungwangi"
+                fill
+                sizes="(max-width: 768px) 40px, (max-width: 1024px) 48px, 52px"
+                className="object-contain rounded-md shadow-sm"
+                priority
+              />
             </motion.div>
             <div>
-              <h1 className="text-lg sm:text-xl font-bold text-green-800 font-serif">Buku Tamu Digital</h1>
+              <h1 className="text-lg sm:text-xl font-bold text-green-800 font-serif group-hover:underline">
+                Buku Tamu Digital
+              </h1>
               <p className="text-xs sm:text-sm text-green-600">Desa Gunungwangi</p>
             </div>
-          </div>
+          </Link>
+
+          {/* LOGIN BUTTON */}
           <Link href="/login">
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
               <Button

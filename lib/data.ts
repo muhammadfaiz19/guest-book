@@ -53,8 +53,7 @@ export const footerData: { title: string; items: FooterLink[] }[] = [
     title: "Jam Operasional",
     items: [
       { icon: Clock, text: "Senin - Jumat: 08:00 - 16:00" },
-      { text: "Sabtu: 08:00 - 12:00" },
-      { text: "Minggu: Tutup" },
+      { text: "Sabtu & Minggu : Tutup" },
     ],
   },
   {

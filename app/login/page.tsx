@@ -6,140 +6,184 @@ import { z } from "zod"
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { Mail, Lock, TreePine, LogIn, ArrowLeft, AlertCircle } from "lucide-react"
+import { Mail, Lock, LogIn, Home, AlertCircle, Eye, EyeOff } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from "@/lib/supabase/client"
+import Image from "next/image"
 
-// Skema validasi menggunakan Zod
 const loginSchema = z.object({
   email: z.string().email({ message: "Format email tidak valid." }),
   password: z.string().min(1, { message: "Password tidak boleh kosong." }),
-});
+})
 
-// Tipe data untuk form berdasarkan skema Zod
-type LoginFormData = z.infer<typeof loginSchema>;
+type LoginFormData = z.infer<typeof loginSchema>
 
 export default function AdminLoginPage() {
-  const router = useRouter();
-  const supabase = createClient();
-  const [authError, setAuthError] = useState<string | null>(null);
+  const router = useRouter()
+  const supabase = createClient()
+  const [authError, setAuthError] = useState<string | null>(null)
+  const [showPassword, setShowPassword] = useState(false)
 
-  // Inisialisasi React Hook Form
   const {
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-    mode: "onChange", // Validasi live saat input berubah
-  });
+    mode: "onChange",
+  })
 
-  // Fungsi yang dijalankan saat form disubmit
   const onSubmit = async (data: LoginFormData) => {
-    setAuthError(null); // Reset error setiap kali submit
+    setAuthError(null)
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    });
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      })
 
-    if (error) {
-      setAuthError("Email atau password yang Anda masukkan salah.");
-    } else {
-      // Jika berhasil, Supabase akan menangani sesi
-      // dan middleware akan mengarahkan ke dashboard
-      router.push('/admin/dashboard');
-      router.refresh(); // Penting untuk memuat ulang state otentikasi
+      if (error) {
+        setAuthError("Email atau password salah. Silakan periksa kembali.")
+      } else {
+        router.push("/admin/dashboard")
+        router.refresh()
+      }
+    } catch (error) {
+      console.error("Login error:", error)
+      setAuthError("Terjadi kesalahan jaringan. Silakan coba lagi.")
     }
-  };
+  }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-sm">
-        <div className="mb-6">
-          <Link href="/" className="flex items-center text-green-600 hover:text-green-700 transition">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            <span className="text-sm">Kembali ke Beranda</span>
-          </Link>
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-white to-emerald-100 flex items-center justify-center p-4">
+      <div className="w-full max-w-sm mx-auto space-y-8">
+        {/* Logo */}
+        <div className="text-center">
+          <Image
+            src="/logo.png"
+            alt="Logo Desa Gunungwangi"
+            width={120}
+            height={120}
+            className="rounded-full w-auto h-auto mx-auto shadow-lg"
+            priority
+          />
+        </div>
+        
+        {/* Title */}
+        <div className="text-center space-y-3">
+          <h1 className="text-3xl font-bold text-emerald-800">
+            Admin Portal
+          </h1>
+          <div className="space-y-1">
+            <p className="text-xl font-semibold text-emerald-700">Buku Tamu Digital</p>
+            <p className="text-sm font-medium text-slate-600">Desa Gunungwangi</p>
+            <p className="text-xs text-slate-500">Kecamatan Argapura, Kabupaten Majalengka</p>
+          </div>
         </div>
 
-        <Card className="border-green-200 shadow-xl bg-white/90 backdrop-blur-sm">
-          <CardHeader className="text-center pb-6">
-            <div className="w-16 h-16 bg-gradient-to-br from-green-600 to-green-700 rounded-full flex items-center justify-center mx-auto mb-4 shadow">
-              <TreePine className="w-8 h-8 text-white" />
+        {/* Login Form */}
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Email field */}
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-sm font-medium text-slate-700">
+              Email Administrator
+            </Label>
+            <div className="relative">
+              <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                id="email"
+                type="email"
+                {...register("email")}
+                placeholder="admin@gunungwangi.desa.id"
+                className={`pl-10 h-12 bg-white/90 border-slate-200 shadow-sm focus:bg-white transition-all ${
+                  errors.email 
+                    ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" 
+                    : "focus:border-emerald-500 focus:ring-emerald-500/20"
+                }`}
+              />
             </div>
-            <CardTitle className="text-xl font-bold text-green-900">Admin Login</CardTitle>
-            <p className="text-gray-600 text-sm mt-2">Masuk ke dashboard admin Desa Gunungwangi</p>
-          </CardHeader>
+            {errors.email && (
+              <p className="text-red-600 text-xs flex items-center bg-red-50 px-3 py-2 rounded-lg">
+                <AlertCircle className="w-3 h-3 mr-2" />
+                {errors.email.message}
+              </p>
+            )}
+          </div>
 
-          <CardContent className="p-6">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-              <div className="space-y-1">
-                <Label htmlFor="email" className="text-green-800 flex items-center text-sm">
-                  <Mail className="w-4 h-4 mr-2" /> Email
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  {...register("email")}
-                  placeholder="admin@gunungwangi.desa.id"
-                  className={`h-11 text-sm border-green-200 focus:border-green-500 focus:ring-green-500 ${errors.email ? 'border-red-500 focus:border-red-500' : ''}`}
-                />
-                {errors.email && (
-                  <p className="text-red-600 text-xs flex items-center pt-1">
-                    <AlertCircle className="w-3 h-3 mr-1" />
-                    {errors.email.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-1">
-                <Label htmlFor="password" className="text-green-800 flex items-center text-sm">
-                  <Lock className="w-4 h-4 mr-2" /> Password
-                </Label>
-                <Input
-                  id="password"
-                  type="password"
-                  {...register("password")}
-                  placeholder="••••••••"
-                  className={`h-11 text-sm border-green-200 focus:border-green-500 focus:ring-green-500 ${errors.password ? 'border-red-500 focus:border-red-500' : ''}`}
-                />
-                 {errors.password && (
-                  <p className="text-red-600 text-xs flex items-center pt-1">
-                    <AlertCircle className="w-3 h-3 mr-1" />
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
-
-              {authError && (
-                <div className="text-red-600 text-sm p-3 bg-red-50 border border-red-200 rounded-lg text-center">
-                  {authError}
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white py-3 rounded-xl text-base shadow-md hover:shadow-lg transition-all"
+          {/* Password field */}
+          <div className="space-y-2">
+            <Label htmlFor="password" className="text-sm font-medium text-slate-700">
+              Password
+            </Label>
+            <div className="relative">
+              <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                {...register("password")}
+                placeholder="••••••••••••"
+                className={`pl-10 pr-10 h-12 bg-white/90 border-slate-200 shadow-sm focus:bg-white transition-all ${
+                  errors.password 
+                    ? "border-red-300 focus:border-red-500 focus:ring-red-500/20" 
+                    : "focus:border-emerald-500 focus:ring-emerald-500/20"
+                }`}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
               >
-                {isSubmitting ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
-                    Masuk...
-                  </>
-                ) : (
-                  <>
-                    <LogIn className="w-4 h-4 mr-2" /> Masuk
-                  </>
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+            {errors.password && (
+              <p className="text-red-600 text-xs flex items-center bg-red-50 px-3 py-2 rounded-lg">
+                <AlertCircle className="w-3 h-3 mr-2" />
+                {errors.password.message}
+              </p>
+            )}
+          </div>
+
+          {/* Auth error */}
+          {authError && (
+            <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+              <p className="text-red-700 text-sm text-center font-medium">{authError}</p>
+            </div>
+          )}
+
+          {/* Submit button */}
+          <Button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full h-12 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-medium rounded-xl shadow-lg hover:shadow-xl transition-all duration-200"
+          >
+            {isSubmitting ? (
+              <>
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-3" />
+                Memproses...
+              </>
+            ) : (
+              <>
+                <LogIn className="w-4 h-4 mr-3" />
+                Masuk ke Dashboard
+              </>
+            )}
+          </Button>
+
+          {/* Back to home button */}
+          <Link href="/">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full h-11 bg-white/80 border-emerald-200 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-300 shadow-sm transition-all duration-200"
+            >
+              <Home className="w-4 h-4 mr-2" />
+              Kembali ke Beranda
+            </Button>
+          </Link>
+        </form>
       </div>
     </div>
   )
