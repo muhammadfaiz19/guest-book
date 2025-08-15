@@ -21,7 +21,9 @@ export default function ExportPopover({ filteredGuests, filters, searchTerm }: E
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet("Buku Tamu");
 
+    // Add column headers (with numbering column)
     worksheet.columns = [
+      { header: "No", key: "no", width: 5 },
       { header: "Nama Lengkap", key: "full_name", width: 20 },
       { header: "Alamat", key: "address", width: 30 },
       { header: "No HP", key: "phone", width: 18 },
@@ -30,12 +32,12 @@ export default function ExportPopover({ filteredGuests, filters, searchTerm }: E
       { header: "Waktu Input", key: "created_at", width: 15 },
     ];
 
-    // Header style with emerald theme
+    // Style header
     worksheet.getRow(1).eachCell((cell) => {
       cell.fill = {
         type: "pattern",
         pattern: "solid",
-        fgColor: { argb: "FF059669" }, // Emerald-600
+        fgColor: { argb: "FF059669" },
       };
       cell.font = { bold: true, color: { argb: "FFFFFFFF" } };
       cell.alignment = { vertical: "middle", horizontal: "center", wrapText: true };
@@ -47,8 +49,10 @@ export default function ExportPopover({ filteredGuests, filters, searchTerm }: E
       };
     });
 
+    // Fill data rows with numbering
     filteredGuests.forEach((guest, index) => {
       const row = worksheet.addRow({
+        no: index + 1,
         full_name: guest.full_name,
         address: guest.address,
         phone: guest.phone ? `'${guest.phone}` : "-",
@@ -70,17 +74,19 @@ export default function ExportPopover({ filteredGuests, filters, searchTerm }: E
         };
       });
 
+      // Alternating row color
       if (index % 2 === 1) {
         row.eachCell((cell) => {
           cell.fill = {
             type: "pattern",
             pattern: "solid",
-            fgColor: { argb: "FFF0FDF4" }, // Emerald-50
+            fgColor: { argb: "FFF0FDF4" },
           };
         });
       }
     });
 
+    // Save file
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {
       type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
@@ -93,16 +99,16 @@ export default function ExportPopover({ filteredGuests, filters, searchTerm }: E
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
 
+    // Title
     doc.setFont("helvetica", "bold");
     doc.setFontSize(16);
     doc.text("Laporan Buku Tamu Desa Gunungwangi", pageWidth / 2, 20, { align: "center" });
-
     doc.setFontSize(12);
     doc.text("Kecamatan Argapura, Kabupaten Majalengka", pageWidth / 2, 28, { align: "center" });
 
+    // Filters info
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-
     const currentDateTime = new Date().toLocaleString("id-ID", {
       day: "2-digit",
       month: "long",
@@ -111,12 +117,10 @@ export default function ExportPopover({ filteredGuests, filters, searchTerm }: E
       minute: "2-digit",
       hour12: false,
     });
-
     const monthNames = [
       "Januari", "Februari", "Maret", "April", "Mei", "Juni",
       "Juli", "Agustus", "September", "Oktober", "November", "Desember"
     ];
-
     const filterInfo = [
       `Tanggal Cetak: ${currentDateTime}`,
       `Filter Hari: ${filters.day === "all" ? "Semua" : filters.day}`,
@@ -124,15 +128,16 @@ export default function ExportPopover({ filteredGuests, filters, searchTerm }: E
       `Filter Tahun: ${filters.year === "all" ? "Semua" : filters.year}`,
       `Pencarian: ${searchTerm || "Tidak ada"}`,
     ];
-
     filterInfo.forEach((text, i) => {
       doc.text(text, 14, 40 + i * 6);
     });
 
+    // Table with numbering
     autoTable(doc, {
       startY: 40 + filterInfo.length * 6 + 8,
-      head: [["Nama", "Alamat", "No HP", "Tujuan", "Tanggal Kunjungan", "Waktu Input"]],
-      body: filteredGuests.map((guest) => [
+      head: [["No", "Nama", "Alamat", "No HP", "Tujuan", "Tanggal Kunjungan", "Waktu Input"]],
+      body: filteredGuests.map((guest, i) => [
+        i + 1,
         guest.full_name,
         guest.address,
         guest.phone || "-",
@@ -150,16 +155,17 @@ export default function ExportPopover({ filteredGuests, filters, searchTerm }: E
         valign: "middle",
       },
       headStyles: {
-        fillColor: [5, 150, 105], // Emerald-600
+        fillColor: [5, 150, 105],
         textColor: 255,
         fontStyle: "bold",
       },
       alternateRowStyles: {
-        fillColor: [240, 253, 244], // Emerald-50
+        fillColor: [240, 253, 244],
       },
       margin: { left: 14, right: 14 },
     });
 
+    // Save file
     doc.save(`buku-tamu-desa-gunungwangi-${new Date().toISOString().split("T")[0]}.pdf`);
     toast.success("Data berhasil diekspor ke PDF");
   };
