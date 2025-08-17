@@ -6,11 +6,15 @@
 ---
 
 ## ✨ Fitur
-- 🔐 Keamanan Data (terenkripsi & backup otomatis)  
-- 📜 Riwayat Kunjungan Digital & Terstruktur  
-- 📊 Laporan & Statistik Kunjungan  
-- ⚡ Registrasi Cepat & User-Friendly  
-- 📤 Export Data ke PDF & Excel  
+- 🔐 **Keamanan Data** — Data tamu terenkripsi & tersimpan aman di database.  
+- 📜 **Riwayat Kunjungan** — Semua kunjungan tercatat digital & terstruktur.  
+- 📊 **Laporan & Statistik** — Lihat data kunjungan periodik untuk analisis & laporan desa.  
+- ⚡ **Pengisian Buku Tamu Praktis** — Form sederhana & responsif, bisa diisi cepat tanpa akun.  
+- 📤 **Export Data** — Ekspor kunjungan ke **PDF & Excel** untuk arsip & laporan resmi.  
+- 🧑‍💻 **Login Admin** — Akses khusus bagi petugas desa untuk mengelola data.  
+- 🗂️ **Manajemen Tamu** — Pencarian, filter, & kategorisasi data kunjungan.  
+- 🌱 **Ramah Lingkungan** — Tanpa kertas, mendukung program desa digital & go green.  
+- 📱 **Responsif** — Bisa diakses dari desktop, tablet, maupun perangkat mobile.  
 
 ---
 
